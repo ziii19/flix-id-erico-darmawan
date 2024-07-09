@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:flixid/data/Firebase/upload_image.dart';
+
 import '../../extensions/build_context_extension.dart';
 import '../../misc/methods.dart';
 import '../../providers/router/router_prov.dart';
@@ -29,9 +31,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   Widget build(BuildContext context) {
     ref.listen(userDataProvider, (previous, next) {
       if (next is AsyncData && next.value != null) {
-        ref
-            .read(routerProvider)
-            .goNamed('main', extra: xfile != null ? File(xfile!.path) : null);
+        ref.read(routerProvider).goNamed(
+              'main',
+            );
       } else if (next is AsyncError) {
         context.showSnackbar(next.error.toString());
       }
@@ -92,13 +94,18 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       ? SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 if (passwordController.text ==
                                     retypePasswordController.text) {
+                                  String imgUrl = await UploadImage()
+                                      .uploadImage(
+                                          File(xfile!.path), 'profileImage');
+
                                   ref.read(userDataProvider.notifier).register(
                                       name: nameController.text,
                                       email: emailController.text,
-                                      password: passwordController.text);
+                                      password: passwordController.text,
+                                      imageUrl: imgUrl);
                                 } else {
                                   context.showSnackbar(
                                       'Please retype your password with the same value');

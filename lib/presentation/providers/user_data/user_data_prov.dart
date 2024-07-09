@@ -65,6 +65,8 @@ class UserData extends _$UserData {
       required String email,
       required String password,
       String? imageUrl}) async {
+    state = const AsyncLoading();
+
     Register register = ref.read(registerProvider);
 
     var result = await register(RegisterParam(

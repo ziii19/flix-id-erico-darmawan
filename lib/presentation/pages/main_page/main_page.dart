@@ -36,6 +36,7 @@ class _MainPageState extends ConsumerState<MainPage> {
       ref
           .read(userDataProvider.notifier)
           .uploadPP(user: user, imageFile: widget.imgFile!);
+      ref.read(userDataProvider.notifier).refreshUserData();
     }
   }
 
