@@ -40,124 +40,129 @@ class _EditProfileState extends ConsumerState<EditProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ListView(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-            child: Column(
-              children: [
-                BackNav(
-                  'Edit Profile',
-                  onTap: () => ref.read(routerProvider).pop(),
-                ),
-                verticalSpace(50),
-                GestureDetector(
-                  onTap: () async {
-                    xfile = await ImagePicker()
-                        .pickImage(source: ImageSource.gallery);
-                    setState(() {});
-                  },
-                  child: CircleAvatar(
-                    radius: 50,
-                    backgroundImage:
-                        xfile != null ? FileImage(File(xfile!.path)) : null,
-                    child: xfile != null
-                        ? null
-                        : Container(
-                            width: 100,
-                            height: 100,
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border:
-                                    Border.all(color: Colors.grey, width: 1),
-                                image: DecorationImage(
-                                    image: ref
-                                                .watch(userDataProvider)
-                                                .valueOrNull
-                                                ?.photoUrl !=
-                                            null
-                                        ? NetworkImage(ref
-                                            .watch(userDataProvider)
-                                            .valueOrNull!
-                                            .photoUrl!) as ImageProvider
-                                        : const AssetImage(
-                                            'assets/pp-placeholder.png'),
-                                    fit: BoxFit.cover)),
-                          ),
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        body: ListView(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+              child: Column(
+                children: [
+                  BackNav(
+                    'Edit Profile',
+                    onTap: () => ref.read(routerProvider).pop(),
                   ),
-                ),
-                verticalSpace(24),
-                FlixTextField(labelText: 'Name', controller: _nameController),
-                verticalSpace(24),
-                FlixTextField(
-                  labelText: 'Email',
-                  controller: _emailController,
-                  enabled: false,
-                ),
-                verticalSpace(24),
-                SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: bgColor,
-                          backgroundColor: saffron,
-                        ),
-                        onPressed: () async {
-                          var user = ref.read(userDataProvider).valueOrNull;
-                          if (user == null) {
-                            // Handle user null case if necessary
-                            return;
-                          }
-
-                          bool shouldUpdateImage = xfile != null;
-                          bool shouldUpdateName =
-                              _nameController.text != user.name;
-
-                          if (shouldUpdateName || shouldUpdateImage) {
-                            String? imgUrl;
-
-                            // Hapus foto lama dan upload foto baru jika ada
-                            if (shouldUpdateImage) {
-                              if (user.photoUrl != null) {
-                                Reference oldPp = FirebaseStorage.instance
-                                    .refFromURL(user.photoUrl!);
-                                await oldPp.delete();
-                              }
-
-                              imgUrl = await UploadImage().uploadImage(
-                                  File(xfile!.path), 'profileImage');
+                  verticalSpace(50),
+                  GestureDetector(
+                    onTap: () async {
+                      xfile = await ImagePicker()
+                          .pickImage(source: ImageSource.gallery);
+                      setState(() {});
+                    },
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundImage:
+                          xfile != null ? FileImage(File(xfile!.path)) : null,
+                      child: xfile != null
+                          ? null
+                          : Container(
+                              width: 100,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border:
+                                      Border.all(color: Colors.grey, width: 1),
+                                  image: DecorationImage(
+                                      image: ref
+                                                  .watch(userDataProvider)
+                                                  .valueOrNull
+                                                  ?.photoUrl !=
+                                              null
+                                          ? NetworkImage(ref
+                                              .watch(userDataProvider)
+                                              .valueOrNull!
+                                              .photoUrl!) as ImageProvider
+                                          : const AssetImage(
+                                              'assets/pp-placeholder.png'),
+                                      fit: BoxFit.cover)),
+                            ),
+                    ),
+                  ),
+                  verticalSpace(24),
+                  FlixTextField(labelText: 'Name', controller: _nameController),
+                  verticalSpace(24),
+                  FlixTextField(
+                    labelText: 'Email',
+                    controller: _emailController,
+                    enabled: false,
+                  ),
+                  verticalSpace(24),
+                  SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: bgColor,
+                            backgroundColor: saffron,
+                          ),
+                          onPressed: () async {
+                            var user = ref.read(userDataProvider).valueOrNull;
+                            if (user == null) {
+                              // Handle user null case if necessary
+                              return;
                             }
 
-                            // Siapkan user baru dengan data yang diperbarui
-                            var updatedUser = user.copyWith(
-                              name: shouldUpdateName
-                                  ? _nameController.text
-                                  : user.name,
-                              photoUrl:
-                                  shouldUpdateImage ? imgUrl : user.photoUrl,
-                            );
+                            bool shouldUpdateImage = xfile != null;
+                            bool shouldUpdateName =
+                                _nameController.text != user.name;
 
-                            // Update user
-                            UpdateUser update = ref.read(updateUserProvider);
-                            update(UpdateUserParam(user: updatedUser));
+                            if (shouldUpdateName || shouldUpdateImage) {
+                              String? imgUrl;
 
-                            // Refresh data user
-                            ref
-                                .read(userDataProvider.notifier)
-                                .refreshUserData();
+                              // Hapus foto lama dan upload foto baru jika ada
+                              if (shouldUpdateImage) {
+                                if (user.photoUrl != null) {
+                                  Reference oldPp = FirebaseStorage.instance
+                                      .refFromURL(user.photoUrl!);
+                                  await oldPp.delete();
+                                }
 
-                            // Kembali ke halaman sebelumnya
-                            ref.read(routerProvider).pop();
-                          } else {
-                            context.showSnackbar('Podo kabeh rasah ngedit');
-                          }
-                        },
-                        child: const Text('Edit Profile')))
-              ],
-            ),
-          )
-        ],
+                                imgUrl = await UploadImage().uploadImage(
+                                    File(xfile!.path), 'profileImage');
+                              }
+
+                              // Siapkan user baru dengan data yang diperbarui
+                              var updatedUser = user.copyWith(
+                                name: shouldUpdateName
+                                    ? _nameController.text
+                                    : user.name,
+                                photoUrl:
+                                    shouldUpdateImage ? imgUrl : user.photoUrl,
+                              );
+
+                              // Update user
+                              UpdateUser update = ref.read(updateUserProvider);
+                              update(UpdateUserParam(user: updatedUser));
+
+                              // Refresh data user
+                              ref
+                                  .read(userDataProvider.notifier)
+                                  .refreshUserData();
+
+                              // Kembali ke halaman sebelumnya
+                              ref.read(routerProvider).pop();
+                            } else {
+                              context.showSnackbar('Podo kabeh rasah ngedit');
+                            }
+                          },
+                          child: const Text('Edit Profile')))
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
