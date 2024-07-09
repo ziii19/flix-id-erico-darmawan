@@ -22,6 +22,9 @@ class FlixTextField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: labelText,
         labelStyle: const TextStyle(color: ghostWhite),
+        disabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+                color: enabled ? Colors.grey.shade800 : Colors.grey)),
         enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
                 color: enabled ? Colors.grey.shade800 : Colors.grey)),
