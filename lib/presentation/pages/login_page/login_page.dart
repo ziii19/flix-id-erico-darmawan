@@ -51,7 +51,9 @@ class LoginPage extends ConsumerWidget {
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      ref.read(routerProvider).pushNamed('forgot-pass');
+                    },
                     child: const Text(
                       'Forgot password',
                       style: TextStyle(fontWeight: FontWeight.bold),

@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:flixid/presentation/pages/forgot_password_page.dart/forgot_page.dart';
+
 import '../../pages/privacy_page/pp.dart';
 import '../../pages/update_profile_page/edit_profile.dart';
 
@@ -65,6 +67,11 @@ Raw<GoRouter> router(RouterRef ref) => GoRouter(routes: [
         path: '/wallet',
         name: 'wallet',
         builder: (context, state) => const WalletPage(),
+      ),
+      GoRoute(
+        path: '/forgot-pass',
+        name: 'forgot-pass',
+        builder: (context, state) => const ForgotPasswordPage(),
       ),
       GoRoute(
         path: '/privacy',
