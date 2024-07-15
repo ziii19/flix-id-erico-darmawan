@@ -1,3 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flixid/presentation/extensions/build_context_extension.dart';
 import 'package:flixid/presentation/misc/methods.dart';
 import 'package:flixid/presentation/widgets/flix_text_field.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +18,22 @@ class ForgotPasswordPage extends ConsumerStatefulWidget {
 }
 
 class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
+  String email = '';
   TextEditingController mailController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
+
+  resetPass() async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      context.showSnackbar('A reset link has been sent to your email');
+
+      Future.delayed(const Duration(seconds: 3))
+          .then((_) => Navigator.pop(context));
+    } on FirebaseAuthException catch (e) {
+      context.showSnackbar(e.message!);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,25 +60,31 @@ class _ForgotPasswordPageState extends ConsumerState<ForgotPasswordPage> {
                   textAlign: TextAlign.center,
                 ),
                 verticalSpace(20),
-                FlixTextField(
-                  labelText: 'Email',
-                  keyboardType: TextInputType.emailAddress,
-                  controller: mailController,
+                Form(
+                  key: _formKey,
+                  child: FlixTextField(
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter E-mail';
+                      }
+                      return null;
+                    },
+                    labelText: 'Email',
+                    keyboardType: TextInputType.emailAddress,
+                    controller: mailController,
+                  ),
                 ),
                 verticalSpace(30),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Logic for sending reset link
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content:
-                              Text('A reset link has been sent to your email'),
-                        ),
-                      );
-                      Future.delayed(const Duration(seconds: 2))
-                          .then((value) => Navigator.pop(context));
+                      if (_formKey.currentState!.validate()) {
+                        setState(() {
+                          email = mailController.text;
+                        });
+                        resetPass();
+                      }
                     },
                     child: const Text('Send Reset Link'),
                   ),

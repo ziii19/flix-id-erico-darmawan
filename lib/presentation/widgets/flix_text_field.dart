@@ -7,17 +7,20 @@ class FlixTextField extends StatelessWidget {
   final bool obscureText;
   final bool enabled;
   final TextInputType? keyboardType;
+  final String? Function(String?)? validator;
   const FlixTextField(
       {super.key,
       required this.labelText,
       required this.controller,
       this.obscureText = false,
       this.enabled = true,
-      this.keyboardType});
+      this.keyboardType,
+      this.validator});
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
+      validator: validator,
       controller: controller,
       obscureText: obscureText,
       enabled: enabled,
@@ -25,6 +28,8 @@ class FlixTextField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: labelText,
         labelStyle: const TextStyle(color: ghostWhite),
+        errorBorder:
+            const OutlineInputBorder(borderSide: BorderSide(color: Colors.red)),
         disabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
                 color: enabled ? Colors.grey.shade800 : Colors.grey)),
