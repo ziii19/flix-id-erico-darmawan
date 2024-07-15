@@ -77,16 +77,14 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 verticalSpace(24),
                 FlixTextField(labelText: 'Email', controller: emailController),
                 verticalSpace(24),
-                FlixTextField(
+                InputPassword(
                   labelText: 'Password',
                   controller: passwordController,
-                  obscureText: true,
                 ),
                 verticalSpace(24),
-                FlixTextField(
+                InputPassword(
                   labelText: 'Retype Password',
                   controller: retypePasswordController,
-                  obscureText: true,
                 ),
                 verticalSpace(24),
                 switch (ref.watch(userDataProvider)) {
