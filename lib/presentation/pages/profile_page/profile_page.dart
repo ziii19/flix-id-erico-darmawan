@@ -31,7 +31,10 @@ class ProfilePage extends ConsumerWidget {
                 onTap: () => ref.read(routerProvider).pushNamed('wallet'),
               ),
               verticalSpace(20),
-              profileItem('Change Password'),
+              profileItem(
+                 'Change Password',
+                onTap: () => ref.read(routerProvider).pushNamed('forgot-pass'), 
+              ),
               verticalSpace(20),
               profileItem('Change Language'),
               verticalSpace(20),
